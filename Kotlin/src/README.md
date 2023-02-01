@@ -12,8 +12,8 @@ Test cases:
 - [x] "Aged Brie" actually increases in Quality the older it gets
 - [x] The Quality of an item is never more than 50
 - [x] "Sulfuras", being a legendary item, never has to be sold or decreases in Quality
-- [ ] The Quality of Backstage passes is never more than 50
-- [ ] "Backstage passes", like aged brie, increases in Quality as its SellIn value approaches;
-- [ ] Quality increases by 2 when there are 10 days or less and by 3 when there are 5 days or less but
-- [ ] Quality drops to 0 after the concert
+- [x] The Quality of Backstage passes is never more than 50
+- [x] "Backstage passes", like aged brie, increases in Quality as its SellIn value approaches;
+- [x] Quality increases by 2 when there are 10 days or less and by 3 when there are 5 days or less but
+- [x] Quality drops to 0 after the concert
 - [ ] Test that it works for multiple items

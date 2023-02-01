@@ -10,6 +10,10 @@ import org.junit.jupiter.params.provider.ValueSource
 
 private const val SULFURAS = "Sulfuras, Hand of Ragnaros"
 
+private const val AGED_BRIE = "Aged Brie"
+
+private const val BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert"
+
 internal class GildedRoseTest {
   @Test
   fun `Given an empty array, then empty array remains unchanged`() {
@@ -65,15 +69,57 @@ internal class GildedRoseTest {
     @ParameterizedTest(name = "quality of {0} is increased by 1")
     @ValueSource(ints = [0, 1, 5, 49])
     fun `Then sellIn is reduced by one, quality increases by one`(startingQuality: Int) {
-      val app = singleUpdatedItemOf("Aged Brie", 10, startingQuality)
+      val app = singleUpdatedItemOf(AGED_BRIE, 10, startingQuality)
       assertThat(app.items[0]).usingRecursiveComparison()
-        .isEqualTo(Item("Aged Brie", sellIn = 9, quality = startingQuality + 1))
+        .isEqualTo(Item(AGED_BRIE, sellIn = 9, quality = startingQuality + 1))
     }
 
     @Test
     fun `And a quality of 50, then quality stays at 50`() {
-      val app = singleUpdatedItemOf("Aged Brie", 10, 50)
-      assertThat(app.items[0]).usingRecursiveComparison().isEqualTo(Item("Aged Brie", sellIn = 9, quality = 50))
+      val app = singleUpdatedItemOf(AGED_BRIE, 10, 50)
+      assertThat(app.items[0]).usingRecursiveComparison().isEqualTo(Item(AGED_BRIE, sellIn = 9, quality = 50))
+    }
+  }
+
+  @Nested
+  @DisplayName(value = "Given Backstage passes to a TAFKAL80ETC concert")
+  inner class BackstagePassesTest {
+    @ParameterizedTest(name = "quality of {0} is increased by 1")
+    @ValueSource(ints = [Int.MAX_VALUE, 99, 11])
+    fun `And sellIn is greater than 10, Then sellIn is reduced by one, quality increases by 1`(sellIn: Int) {
+      val app = singleUpdatedItemOf(BACKSTAGE_PASSES, sellIn, 10)
+      assertThat(app.items[0]).usingRecursiveComparison()
+        .isEqualTo(Item(BACKSTAGE_PASSES, sellIn = sellIn - 1, quality = 11))
+    }
+
+    @ParameterizedTest(name = "at sellIn of {0} quality is increased by 2")
+    @ValueSource(ints = [10, 9, 8, 7, 6])
+    fun `And sellIn is between 10 and 6, Then sellIn is reduced by one, quality increases by 2`(sellIn: Int) {
+      val app = singleUpdatedItemOf(BACKSTAGE_PASSES, sellIn, 10)
+      assertThat(app.items[0]).usingRecursiveComparison()
+        .isEqualTo(Item(BACKSTAGE_PASSES, sellIn = sellIn - 1, quality = 12))
+    }
+
+    @ParameterizedTest(name = "at sellIn of {0} quality is increased by 3")
+    @ValueSource(ints = [5, 4, 3, 2, 1])
+    fun `And sellIn is between 5 and 1, Then sellIn is reduced by one, quality increases by 3`(sellIn: Int) {
+      val app = singleUpdatedItemOf(BACKSTAGE_PASSES, sellIn, 10)
+      assertThat(app.items[0]).usingRecursiveComparison()
+        .isEqualTo(Item(BACKSTAGE_PASSES, sellIn = sellIn - 1, quality = 13))
+    }
+
+    @ParameterizedTest(name = "at sellIn of {0} quality is 0")
+    @ValueSource(ints = [0, -1, -2, -99, Int.MIN_VALUE + 1])
+    fun `And sellIn is less than 0, Then sellIn is reduced by one, quality is zero`(sellIn: Int) {
+      val app = singleUpdatedItemOf(BACKSTAGE_PASSES, sellIn, 50)
+      assertThat(app.items[0]).usingRecursiveComparison()
+        .isEqualTo(Item(BACKSTAGE_PASSES, sellIn = sellIn - 1, quality = 0))
+    }
+
+    @Test
+    fun `And a quality of 50, then quality stays at 50`() {
+      val app = singleUpdatedItemOf(BACKSTAGE_PASSES, 10, 50)
+      assertThat(app.items[0]).usingRecursiveComparison().isEqualTo(Item(BACKSTAGE_PASSES, sellIn = 9, quality = 50))
     }
   }
 
