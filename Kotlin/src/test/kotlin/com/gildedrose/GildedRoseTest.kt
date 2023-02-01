@@ -14,6 +14,8 @@ private const val AGED_BRIE = "Aged Brie"
 
 private const val BACKSTAGE_PASSES = "Backstage passes to a TAFKAL80ETC concert"
 
+private const val STANDARD_ITEM = "Thing"
+
 internal class GildedRoseTest {
   @Test
   fun `Given an empty array, then empty array remains unchanged`() {
@@ -21,6 +23,35 @@ internal class GildedRoseTest {
     val app = GildedRose(items)
     app.updateQuality()
     assertThat(app.items.size).isEqualTo(0)
+  }
+
+  @Test
+  fun `Given an array of multiple items, then return correct values for each item`() {
+    val originalItems = arrayOf(
+      Item(SULFURAS, sellIn = 5, 25),
+      Item(AGED_BRIE, sellIn = 5, 25),
+      Item(STANDARD_ITEM, sellIn = 5, 25),
+      Item(BACKSTAGE_PASSES, sellIn = 5, 25)
+    )
+
+    val expectedItems = arrayOf(
+      Item(SULFURAS, sellIn = 5, 25),
+      Item(AGED_BRIE, sellIn = 4, 26),
+      Item(STANDARD_ITEM, sellIn = 4, 24),
+      Item(BACKSTAGE_PASSES, sellIn = 4, 28)
+    )
+
+    val app = GildedRose(originalItems)
+    app.updateQuality()
+    val actualItems = app.items
+
+    assertThat(actualItems.size)
+      .isEqualTo(originalItems.size)
+      .isEqualTo(expectedItems.size)
+
+    actualItems.zip(expectedItems).forEach {
+      assertThat(it.first).usingRecursiveComparison().isEqualTo(it.second)
+    }
   }
 
   @Nested
@@ -31,16 +62,16 @@ internal class GildedRoseTest {
 
     @Test
     fun `Then sellIn and quality are reduced by one`() {
-      val app = singleUpdatedItemOf("Thing", 10, 20)
-      assertThat(app.items[0]).usingRecursiveComparison().isEqualTo(Item("Thing", sellIn = 9, quality = 19))
+      val app = singleUpdatedItemOf(STANDARD_ITEM, 10, 20)
+      assertThat(app.items[0]).usingRecursiveComparison().isEqualTo(Item(STANDARD_ITEM, sellIn = 9, quality = 19))
     }
 
     @ParameterizedTest(name = "quality of {0} is reduced by 2")
     @ValueSource(ints = [0, -1, -999, Int.MIN_VALUE + 1])
     fun `And a sellIn of 0 or less, then quality is reduced by 2`(startingSellIn: Int) {
-      val app = singleUpdatedItemOf("Thing", startingSellIn, 20)
+      val app = singleUpdatedItemOf(STANDARD_ITEM, startingSellIn, 20)
       assertThat(app.items[0]).usingRecursiveComparison()
-        .isEqualTo(Item("Thing", sellIn = startingSellIn - 1, quality = 18))
+        .isEqualTo(Item(STANDARD_ITEM, sellIn = startingSellIn - 1, quality = 18))
     }
 
     @ParameterizedTest(name = "quality of {0} is reduced to 0")
@@ -48,8 +79,8 @@ internal class GildedRoseTest {
     fun `And a sellIn of 0 and a quality of less than or equal to 2, then quality is reduced to 0`(
       startingQuality: Int
     ) {
-      val app = singleUpdatedItemOf("Thing", 0, startingQuality)
-      assertThat(app.items[0]).usingRecursiveComparison().isEqualTo(Item("Thing", sellIn = -1, quality = 0))
+      val app = singleUpdatedItemOf(STANDARD_ITEM, 0, startingQuality)
+      assertThat(app.items[0]).usingRecursiveComparison().isEqualTo(Item(STANDARD_ITEM, sellIn = -1, quality = 0))
     }
 
     @ParameterizedTest(name = "quality of {0} is reduced to {1}")
@@ -58,8 +89,8 @@ internal class GildedRoseTest {
       startingQuality: Int,
       updatedQuality: Int
     ) {
-      val app = singleUpdatedItemOf("Thing", 0, 1)
-      assertThat(app.items[0]).usingRecursiveComparison().isEqualTo(Item("Thing", sellIn = -1, quality = 0))
+      val app = singleUpdatedItemOf(STANDARD_ITEM, 0, 1)
+      assertThat(app.items[0]).usingRecursiveComparison().isEqualTo(Item(STANDARD_ITEM, sellIn = -1, quality = 0))
     }
   }
 
@@ -138,22 +169,20 @@ internal class GildedRoseTest {
   }
 
   @Nested
-  inner class UndefinedBehaviourTest {
+  inner class UnspecifiedBehaviourTest {
     @Test
     fun `Given input has a negative value for quality then return the value unchanged`() {
-      val app = singleUpdatedItemOf("Thing", 0, -1)
-      assertThat(app.items[0]).usingRecursiveComparison().isEqualTo(Item("Thing", sellIn = -1, quality = -1))
+      val app = singleUpdatedItemOf(STANDARD_ITEM, 0, -1)
+      assertThat(app.items[0]).usingRecursiveComparison().isEqualTo(Item(STANDARD_ITEM, sellIn = -1, quality = -1))
     }
 
     @ParameterizedTest
     @DisplayName(value = "Given {0} then quality is 51")
     @CsvSource(delimiter = '|', value = ["Aged Brie|51", "Thing|50", "Backstage passes to a TAFKAL80ETC concert|51"])
-    // TODO: This test may be redundant once everything else is tested
-    fun `Given input has a quality greater than 50 then return some value`(itemName: String, itemQuality: Int) {
-      val quality = 51
-      val sellIn = 10
-      val app = singleUpdatedItemOf(itemName, sellIn, quality)
-      assertThat(app.items[0]).usingRecursiveComparison().isEqualTo(Item(itemName, sellIn = 9, quality = itemQuality))
+    fun `Given input has a quality greater than 50 then return some value`(itemName: String, expectedItemQuality: Int) {
+      val app = singleUpdatedItemOf(itemName, 10, 51)
+      assertThat(app.items[0]).usingRecursiveComparison()
+        .isEqualTo(Item(itemName, sellIn = 9, quality = expectedItemQuality))
     }
   }
 

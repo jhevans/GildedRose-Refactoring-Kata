@@ -1,7 +1,7 @@
 # Readme
 
 General strategy for tackling this problem:
-- [ ] Test existing code 
+- [x] Test existing code
 - [ ] Do any 'easy win' refactoring
 - [ ] Work out next steps for making changes
 
@@ -16,4 +16,4 @@ Test cases:
 - [x] "Backstage passes", like aged brie, increases in Quality as its SellIn value approaches;
 - [x] Quality increases by 2 when there are 10 days or less and by 3 when there are 5 days or less but
 - [x] Quality drops to 0 after the concert
-- [ ] Test that it works for multiple items
+- [x] Test that it works for multiple items
